@@ -16,22 +16,65 @@
 #include "csimFuncs.h"
 
 int main(int argc, char **argv) {
-  assert(argc == 7); // 7 total - executable and 6 args
+  if (argc != 7) { // 7 total - executable and 6 args
+  	fprintf(stderr, "Invalid number of command line inputs\n"); 
+	return 1; 
+  }
+  
   uint32_t sets, blocks, blockSize, writeAllocate, writeBack, lru;
   // set command-line arguments
-  sets = atoi(argv[1]);
-  blocks = atoi(argv[2]);
-  blockSize = atoi(argv[3]);
-  writeAllocate = strcmp("no-write-allocate", argv[4]); // will return zero if they're equal
-  writeAllocate = writeAllocate == 0 ? 0 : 1;
-  writeBack = strcmp("write-through", argv[5]); // will return zero if they're equal
-  writeBack = writeBack == 0 ? 0 : 1;
-  lru = strcmp("lru", argv[6]) == 0 ? 1 : 0;
+  if (atol(argv[1]) > 0) {
+	  sets = atoi(argv[1]);
+  } else {
+	  fprintf(stderr, "Invalid number of sets\n");
+	  return 1; 
+  }
+
+  if (atol(argv[2]) > 0) {
+          blocks = atoi(argv[2]);
+  } else {
+          fprintf(stderr, "Invalid number of blocks\n");
+          return 1;
+  }
+
+  if (atol(argv[3]) >= 4) {
+          blocks = atoi(argv[3]);
+  } else {
+          fprintf(stderr, "Invalid block size\n");
+          return 1;
+  }
+
+  if (strcmp("no-write-allocate", argv[4]) == 0) {
+	  writeAllocate = 0; 
+  } else if (strcmp("write-allocate", argv[4]) == 0) {
+	  writeAllocate = 1; 
+  } else {
+	  fprintf(stderr, "Incorrect cache feature\n"); 
+  }
+
+  if (strcmp("write-through", argv[5]) == 0) {
+          writeBack = 0;
+  } else if (strcmp("write-back", argv[5]) == 0) {
+          writeAllocate = 1;
+  } else {
+          fprintf(stderr, "Incorrect cache feature\n");
+  }
+
+  if (strcmp("fifo", argv[6]) == 0) {
+          lru = 0;
+  } else if (strcmp("lru", argv[6]) == 0) {
+          lru = 1;
+  } else {
+          fprintf(stderr, "Incorrect cache feature\n");
+  }
+ 
   // error checking
   if (!writeAllocate && writeBack) {
-    fprintf(stderr, "Incompatible cache features");
+    fprintf(stderr, "Incompatible cache features\n");
     return 1;
   }
+
+
   // reading in series of loads and stores
   char command; 
   uint32_t address;
@@ -42,11 +85,11 @@ int main(int argc, char **argv) {
   while(scanf(" %c %x %d", &command, &address, &ignore) == 3) {
     // error checking
     if (command != 's' && command != 'l') {
-      fprintf(stderr, "Invalid trace file");
+      fprintf(stderr, "Invalid trace file\n");
       return 1;
     }
     // check for 32-bit address?
-    printf(" %c %x %d\n", command, address, ignore);
+    printf(" %c %d %d\n", command, address, ignore);
   }
   
 
