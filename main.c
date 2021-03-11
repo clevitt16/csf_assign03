@@ -38,7 +38,7 @@ int main(int argc, char **argv) {
   }
 
   if (atol(argv[3]) >= 4) {
-          blocks = atoi(argv[3]);
+          blockSize = atoi(argv[3]);
   } else {
           fprintf(stderr, "Invalid block size\n");
           return 1;
