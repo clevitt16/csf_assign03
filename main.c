@@ -15,83 +15,100 @@
 #include <string.h>
 #include "csimFuncs.h"
 
+// can we establish 4-space indenting :)
+
 int main(int argc, char **argv) {
-  if (argc != 7) { // 7 total - executable and 6 args
-  	fprintf(stderr, "Invalid number of command line inputs\n"); 
-	return 1; 
-  }
-  
-  uint32_t sets, blocks, blockSize, writeAllocate, writeBack, lru;
-  // set command-line arguments
-  if (atol(argv[1]) > 0) {
-	  sets = atoi(argv[1]);
-  } else {
-	  fprintf(stderr, "Invalid number of sets\n");
-	  return 1; 
-  }
-
-  if (atol(argv[2]) > 0) {
-          blocks = atoi(argv[2]);
-  } else {
-          fprintf(stderr, "Invalid number of blocks\n");
-          return 1;
-  }
-
-  if (atol(argv[3]) >= 4) {
-          blockSize = atoi(argv[3]);
-  } else {
-          fprintf(stderr, "Invalid block size\n");
-          return 1;
-  }
-
-  if (strcmp("no-write-allocate", argv[4]) == 0) {
-	  writeAllocate = 0; 
-  } else if (strcmp("write-allocate", argv[4]) == 0) {
-	  writeAllocate = 1; 
-  } else {
-	  fprintf(stderr, "Incorrect cache feature\n"); 
-  }
-
-  if (strcmp("write-through", argv[5]) == 0) {
-          writeBack = 0;
-  } else if (strcmp("write-back", argv[5]) == 0) {
-          writeAllocate = 1;
-  } else {
-          fprintf(stderr, "Incorrect cache feature\n");
-  }
-
-  if (strcmp("fifo", argv[6]) == 0) {
-          lru = 0;
-  } else if (strcmp("lru", argv[6]) == 0) {
-          lru = 1;
-  } else {
-          fprintf(stderr, "Incorrect cache feature\n");
-  }
- 
-  // error checking
-  if (!writeAllocate && writeBack) {
-    fprintf(stderr, "Incompatible cache features\n");
-    return 1;
-  }
-
-
-  // reading in series of loads and stores
-  char command; 
-  uint32_t address;
-  int ignore;
-  //printf("%d", scanf(" %c %x %d ", &command, &address, &ignore));
-  //printf("%c %x %d", command, address, ignore);
-  
-  while(scanf(" %c %x %d", &command, &address, &ignore) == 3) {
-    // error checking
-    if (command != 's' && command != 'l') {
-      fprintf(stderr, "Invalid trace file\n");
-      return 1;
+    if (argc != 7) { // 7 total - executable and 6 args
+        fprintf(stderr, "Invalid number of command line inputs\n"); 
+        return 1; 
     }
-    // check for 32-bit address?
-    printf(" %c %d %d\n", command, address, ignore);
-  }
+    
+    uint32_t sets, blocks, blockSize, writeAllocate, writeBack, lru;
+    // set command-line arguments
+    if (atol(argv[1]) > 0) {            // kinda confused about this logic?
+        sets = atoi(argv[1]);       // is it meant to check for overflow converting to int? or for negative numbers?
+    } else {
+        fprintf(stderr, "Invalid number of sets\n");
+        return 1; 
+    }
+
+    if (atol(argv[2]) > 0) {
+        blocks = atoi(argv[2]);
+    } else {
+        fprintf(stderr, "Invalid number of blocks\n");
+        return 1;
+    }
+    
+    if (atol(argv[3]) >= 4) {
+        blockSize = atoi(argv[3]);
+    } else {
+        fprintf(stderr, "Invalid block size\n");
+        return 1;
+    }
+
+    if (strcmp("no-write-allocate", argv[4]) == 0) {
+	    writeAllocate = 0U; 
+    } else if (strcmp("write-allocate", argv[4]) == 0) {
+        writeAllocate = 1U; 
+    } else {
+	    fprintf(stderr, "Incorrect cache feature\n"); 
+    }
+
+    if (strcmp("write-through", argv[5]) == 0) {
+        writeBack = 0U;
+    } else if (strcmp("write-back", argv[5]) == 0) {
+        writeAllocate = 1U;
+    } else {
+        fprintf(stderr, "Incorrect cache feature\n");
+    }
+
+    if (strcmp("fifo", argv[6]) == 0) {
+        lru = 0U;
+    } else if (strcmp("lru", argv[6]) == 0) {
+        lru = 1U;
+    } else {
+        fprintf(stderr, "Incorrect cache feature\n");
+    }
+ 
+    // error checking
+    if (!writeAllocate && writeBack) {
+        fprintf(stderr, "Incompatible cache features\n");
+        return 1;
+    }
+
+    // create cache - need to initialize all data
+    // at this point, assume sets, blocks, and blockSize are all positive ints, uint32_ts
+    Cache cache;
+    cache.offsetBits = powerOfTwo(blockSize);
+    cache.indexBits = powerOfTwo(sets);
+
+    // accumulators
+    uint32_t loads = 0, stores = 0, loadHits = 0, loadMisses = 0, storeHits = 0, storeMisses = 0, cycles = 0;
+
+    // reading in series of loads and stores
+    char command; 
+    uint32_t address;
+    int ignore;
+  
+    while(scanf(" %c %x %d", &command, &address, &ignore) == 3) {
+        // check for 32-bit address?
+
+        if (command = 's') {
+            stores++;
+            // do cache simulation for loads, update accumulators
+        } else if (command == 'l') {
+            loads++;
+            // so cache simultion for stores, update accumulators
+        }
+        else {
+            fprintf(stderr, "Invalid trace file\n");
+            return 1;
+        }
+        
+
+        printf(" %c %d %d\n", command, address, ignore);
+    }
   
 
-  return 0;
+    return 0;
 }
