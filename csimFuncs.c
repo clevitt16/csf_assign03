@@ -14,6 +14,7 @@
 #include <stdint.h>
 #include <string.h>
 #include "csimFuncs.h"
+#include <math.h>
 
 
 uint32_t powerOfTwo (uint32_t num) {
@@ -30,3 +31,20 @@ uint32_t powerOfTwo (uint32_t num) {
     }
   return 0U;    // if num % 2 != 0, it's not a power of 2
 }
+
+uint32_t searchCache (uint32_t address, Cache cache) {
+    // need to extract index from address - will create a bitstring 111000 where 1s are index, 0s offset
+    uint32_t getIndex = (uint32_t)pow(2, cache.indexBits);
+    getIndex = getIndex << cache.offsetBits;
+    uint32_t index = address & getIndex;
+    index = index >> cache.offsetBits;
+    Set set = cache.sets[index];
+    uint32_t tag = address >> (cache.indexBits + cache.offsetBits);
+    for (uint32_t i = 0U; i < cache.associativity; i++) {
+        if (set.blocks[i].valid && set.blocks[i].tag == tag) {
+            return i;
+        }
+    }
+    return cache.associativity;
+}
+

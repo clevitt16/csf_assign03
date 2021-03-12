@@ -20,7 +20,8 @@
 
 typedef struct {
     uint32_t dirty;  // will only be used for write-back caches
-    uint32_t * tags; // holds the tags that identify each block
+    uint32_t valid;  // will only be used for write-back caches
+    uint32_t tag; // holds the tags that identify each block
 } Block;
 
 typedef struct {
@@ -32,8 +33,8 @@ typedef struct {
 typedef struct {
     uint32_t offsetBits;
     uint32_t indexBits;
-    uint32_t numSets;
-    Set * sets;
+    Set * sets;      // cache-index will be index in array
+    uint32_t associativity;     // number of blocks in each set
 } Cache;
 
 
@@ -50,9 +51,14 @@ uint32_t powerOfTwo (uint32_t num);
 
 /*
 * Checks if given address is a hit or a miss
-*
+* Parameters
+*    address - the memory address to look for in the cache
+*    cache - the cache to search
+* Returns
+*    set associativity if the address is not stored (cache miss)
+*    location of the block in the set if the address if present (cache hit)
 */
-uint32_t searchCache (uint32_t address);
+uint32_t searchCache (uint32_t address, Cache cache);
 
 
 #endif
