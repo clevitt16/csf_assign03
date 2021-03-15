@@ -82,6 +82,7 @@ int main(int argc, char **argv) {
     Cache cache;
     cache.offsetBits = powerOfTwo(blockSize);
     cache.indexBits = powerOfTwo(numSets);
+    cache.associativity = numBlocks;
     Set * sets = malloc(sizeof(Set) * numSets);
     for (uint32_t i = 0; i < numSets; i++) {
         Set set;
@@ -91,7 +92,12 @@ int main(int argc, char **argv) {
             blocks[j] = b;
         }
         set.blocks = blocks;
+        set.numBlocks = numBlocks;
+        set.emptyBlocks = numBlocks;
+        set.index = i;
+        sets[i] = set;
     }
+    cache.sets = sets;
 
     // accumulators
     uint32_t loads = 0, stores = 0, loadHits = 0, loadMisses = 0, storeHits = 0, storeMisses = 0, cycles = 0;
@@ -101,24 +107,45 @@ int main(int argc, char **argv) {
     uint32_t address;
     int ignore;
   
-    while(scanf(" %c %x %d", &command, &address, &ignore) == 3) {
-        // check for 32-bit address?
 
-        if (command = 's') {
+    // need to update all cache accesses and stores in cache to track fifo/lru
+    while(scanf(" %c %x %d", &command, &address, &ignore) == 3) {
+        if (command == 's') {
             uint32_t findAddress = searchCache(address, cache);
-            if (findAddress == cache.associativity) {
-                // cache miss
-            } else {
-                // cache hit, findAddress contains block number
+            if (findAddress == cache.associativity) {    // cache miss
+                printf("write miss");
+                if (writeAllocate) {  // load value into cache and change it there, implies writeBack
+                    cycles += loadToCache(address, cache);
+                    cycles++; 
+                } else {   // no-write-allocate - write value straight to main memory (skip over cache)
+                    cycles += 100;
+                }
+                storeMisses++;
+            } else {  // cache hit, findAddress contains block number
+                printf("write hit");
+                if (writeBack) {  // change value in cache, make sure to mark dirty bit
+                    uint32_t index = computeIndex(address, cache);
+                    cache.sets[index].blocks[findAddress].dirty = 1;
+                    cycles++;
+                } else {   // write-through - change value in cache and in main memory
+                    cycles++;   // update value in cache 
+                    cycles += 100;  // update value in main memory
+                }
+                storeHits++;
             }
             stores++;
             // do cache simulation for loads, update accumulators
         } else if (command == 'l') {
             uint32_t findAddress = searchCache(address, cache);
-            if (findAddress == cache.associativity) {
-                // cache miss
+            if (findAddress == cache.associativity) {   // cache miss
+                // need to load value into cache
+                printf("load miss");
+                loadMisses++;
             } else {
-                // cache hit, findAddress contains block number
+                // cache hit, don't need to do anything! :)
+                printf("load hit");
+                cycles++;
+                loadHits++;
             }
             loads++;
             // so cache simultion for stores, update accumulators
@@ -127,11 +154,14 @@ int main(int argc, char **argv) {
             fprintf(stderr, "Invalid trace file\n");
             return 1;
         }
-        
-
         printf(" %c %d %d\n", command, address, ignore);
     }
-  
+
+    // free cache
+    for (uint32_t i = 0; i < numSets; i++) {
+        free(cache.sets[i].blocks);
+    }
+    free(cache.sets);
 
     return 0;
 }

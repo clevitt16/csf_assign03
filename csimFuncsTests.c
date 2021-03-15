@@ -26,7 +26,7 @@ TestObjs *setup(void);
 void cleanup(TestObjs *objs);
 
 void testPowerOfTwo(TestObjs *objs);
-
+void testSearchCache(TestObjs *objs);
 
 int main(int argc, char **argv) {
 	TEST_INIT();
