@@ -28,6 +28,7 @@ typedef struct {
     uint32_t index;     // identifies the set
     uint32_t numBlocks;
     Block * blocks;   
+    uint32_t emptyBlocks;
 } Set;
 
 typedef struct {
