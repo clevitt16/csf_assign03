@@ -27,21 +27,21 @@ int main(int argc, char **argv) {
     // set command-line arguments
 
     if (atol(argv[1]) > 0) {            // kinda confused about this logic?
-        numSets = atoi(argv[1]);       // is it meant to check for overflow converting to int? or for negative numbers?
+        numSets = atol(argv[1]);       // is it meant to check for overflow converting to int? or for negative numbers?
     } else {
         fprintf(stderr, "Invalid number of sets\n");   // also need to check that sets is a power of 2
         return 1; 
     }
 
     if (atol(argv[2]) > 0) {
-        numBlocks = atoi(argv[2]);
+        numBlocks = atol(argv[2]);
     } else {
         fprintf(stderr, "Invalid number of blocks\n");  // also need to check that blocks is a power of 2
         return 1;
     }
     
     if (atol(argv[3]) >= 4) {
-        blockSize = atoi(argv[3]);
+        blockSize = atol(argv[3]);
     } else {
         fprintf(stderr, "Invalid block size\n");  // also need to check that blockSize >= 4 and a power of 2
         return 1;
@@ -76,7 +76,7 @@ int main(int argc, char **argv) {
         fprintf(stderr, "Incompatible cache write policies\n");
         return 1;
     }
-
+	
     // create cache - need to initialize all data
     // at this point, assume sets, blocks, and blockSize are all positive and powers of 2 (all input checking done)
     Cache cache;
@@ -135,16 +135,18 @@ int main(int argc, char **argv) {
             }
             stores++;
             // do cache simulation for loads, update accumulators
+	    // UPDATE NUMBER OF CYCLES
         } else if (command == 'l') {
             uint32_t findAddress = searchCache(address, cache);
             if (findAddress == cache.associativity) {   // cache miss
                 // need to load value into cache
                 printf("load miss");
                 loadMisses++;
+		cycles += loadtoCache(address, cache); 
             } else {
                 // cache hit, don't need to do anything! :)
                 printf("load hit");
-                cycles++;
+                cycles++; //Trisha! update LRU here
                 loadHits++;
             }
             loads++;
