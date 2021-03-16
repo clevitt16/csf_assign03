@@ -18,7 +18,7 @@
 #include "csimFuncs.h"
 
 typedef struct {
-//	ApInt *ap0;
+    Cache cacheShell;
 
 } TestObjs;
 
@@ -26,7 +26,9 @@ TestObjs *setup(void);
 void cleanup(TestObjs *objs);
 
 void testPowerOfTwo(TestObjs *objs);
+void testComputeIndex(TestObjs *objs);
 void testSearchCache(TestObjs *objs);
+void testLoadToCache(TestObjs *objs);
 
 int main(int argc, char **argv) {
 	TEST_INIT();
@@ -40,12 +42,14 @@ int main(int argc, char **argv) {
 	}
 
 	TEST(testPowerOfTwo);
+    TEST(testComputeIndex);
 	TEST_FINI();
 }
 
 TestObjs *setup(void) {
 	TestObjs *objs = malloc(sizeof(TestObjs));
-
+    Cache shell = {2, 2, NULL, 4};
+    objs->cacheShell = shell;
 	return objs;
 }
 
@@ -64,4 +68,12 @@ void testPowerOfTwo(TestObjs *objs) {
     ASSERT(0U == powerOfTwo(1U));
     ASSERT(0U == powerOfTwo(12U));
     ASSERT(0U == powerOfTwo(24U));
+}
+
+void testComputeIndex(TestObjs *objs) {
+    ASSERT(0U == computeIndex(0U, objs->cacheShell));
+    ASSERT(0U == computeIndex(1U, objs->cacheShell));
+    ASSERT(1U == computeIndex(4U, objs->cacheShell));
+    ASSERT(2U == computeIndex(11U, objs->cacheShell));
+    ASSERT(3U == computeIndex(255U, objs->cacheShell));
 }

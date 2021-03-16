@@ -142,7 +142,7 @@ int main(int argc, char **argv) {
                 // need to load value into cache
                 printf("load miss");
                 loadMisses++;
-		cycles += loadtoCache(address, cache); 
+		cycles += loadToCache(address, cache); 
             } else {
                 // cache hit, don't need to do anything! :)
                 printf("load hit");

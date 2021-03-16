@@ -22,4 +22,4 @@ tctest.o : tctest.c tctest.h
 
 
 clean :
-	rm -f *.o *~ main csim
+	rm -f *.o *~ main csim csimTests
