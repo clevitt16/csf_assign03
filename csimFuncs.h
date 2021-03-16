@@ -25,7 +25,7 @@ typedef struct {
 } Block;
 
 typedef struct {
-    uint32_t index;     // identifies the set
+    uint32_t index;     // identifies the set - but not every set has an index! (if number of sets is 1, fully associative)
     uint32_t numBlocks;
     Block * blocks;   
     uint32_t emptyBlocks;
@@ -44,11 +44,11 @@ typedef struct {
 * Parameters
 *     num - unsigned int to check
 * Returns
-*     0 if num is not a power of 2
+*     -1 if num is not a power of 2
 *     if num is a power of 2, returns the exponent
 *
 */
-uint32_t powerOfTwo (uint32_t num);
+int powerOfTwo (uint32_t num);
 
 
 /*

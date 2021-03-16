@@ -19,7 +19,7 @@
 
 typedef struct {
     Cache cacheShell;
-
+    Cache tinyCache;
 } TestObjs;
 
 TestObjs *setup(void);
@@ -48,8 +48,17 @@ int main(int argc, char **argv) {
 
 TestObjs *setup(void) {
 	TestObjs *objs = malloc(sizeof(TestObjs));
-    Cache shell = {2, 2, NULL, 4};
+    Cache shell = {2, 2, NULL, 4}; // no acutal data
     objs->cacheShell = shell;
+    Cache tiny; // tiny cache - one set of one block with 4 bytes
+    tiny.offsetBits = 2;
+    tiny.indexBits = 0;
+    tiny.associativity = 1;
+    Block * tinyBlockPtr = malloc(sizeof(Block));
+    Block tinyBlock = {0U, 1U, 0U};
+    *tinyBlockPtr = tinyBlock; // tag is 0
+    Set * tinySetPtr = malloc(sizeof(Set));
+    Set tinySet = {0, 1, tinyBlockPtr, 0};
 	return objs;
 }
 
@@ -59,15 +68,15 @@ void cleanup(TestObjs *objs) {
 }
 
 void testPowerOfTwo(TestObjs *objs) {
-	ASSERT(1U == powerOfTwo(2U));
-	ASSERT(2U == powerOfTwo(4U));
-    ASSERT(3U == powerOfTwo(8U));
-    ASSERT(6U == powerOfTwo(64U));
-    ASSERT(10U == powerOfTwo(1024U));
-    ASSERT(0U == powerOfTwo(0U));
-    ASSERT(0U == powerOfTwo(1U));
-    ASSERT(0U == powerOfTwo(12U));
-    ASSERT(0U == powerOfTwo(24U));
+	ASSERT(1 == powerOfTwo(2U));
+	ASSERT(2 == powerOfTwo(4U));
+    ASSERT(3 == powerOfTwo(8U));
+    ASSERT(6 == powerOfTwo(64U));
+    ASSERT(10 == powerOfTwo(1024U));
+    ASSERT(-1 == powerOfTwo(0U));
+    ASSERT(0 == powerOfTwo(1U));
+    ASSERT(-1 == powerOfTwo(12U));
+    ASSERT(-1 == powerOfTwo(24U));
 }
 
 void testComputeIndex(TestObjs *objs) {
@@ -76,4 +85,8 @@ void testComputeIndex(TestObjs *objs) {
     ASSERT(1U == computeIndex(4U, objs->cacheShell));
     ASSERT(2U == computeIndex(11U, objs->cacheShell));
     ASSERT(3U == computeIndex(255U, objs->cacheShell));
+}
+
+void testSearchCache(TestObjs *objs) {
+    ASSERT(0U == searchCache(0U, objs->tinyCache));
 }
