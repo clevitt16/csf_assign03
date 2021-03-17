@@ -63,16 +63,19 @@ uint32_t searchCache (uint32_t address, Cache cache) {
 uint32_t loadToCache (uint32_t address, Cache cache) {
 /*
 * compute index, locate set
-* if emptyBlocks > 0
+* if set.emptyBlocks > 0
 *   iterate through blocks until you find the invalid one
+*   set it to valid and set new tag
+*   decriment set.emptyBlocks
 *   done
 * if emptyBlocks == 0 need to do an eviction!
 *   identify which block to evict
-*       will need to add data to blocks to indicate fifo/lru tracking
-*   if write-through, can just evict the block
-*   if write-back, need to store entire block in main memory
+*       if fifo, check block fifo trackers
+*       if lru, check block lru trackers
+*   if write-through, can just set the new tag
+*   if write-back, check dirty bit of each block and store dirty ones in main memory, wipe all dirty bits and set tag
 *  
-* set valid and tag bit of your new block  
+* make sure to count cycles!
 *
 */
     return 0;

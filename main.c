@@ -114,7 +114,7 @@ int main(int argc, char **argv) {
             if (findAddress == cache.associativity) {    // cache miss
                 printf("write miss");
                 if (writeAllocate) {  // load value into cache and change it there, implies writeBack
-                    cycles += loadToCache(address, cache);
+                    cycles += loadToCache(address, cache);   // LRU AND FIFO
                     cycles++; 
                 } else {   // no-write-allocate - write value straight to main memory (skip over cache)
                     cycles += 100;
@@ -124,16 +124,15 @@ int main(int argc, char **argv) {
                 printf("write hit");
                 if (writeBack) {  // change value in cache, make sure to mark dirty bit
                     uint32_t index = computeIndex(address, cache);
-                    cache.sets[index].blocks[findAddress].dirty = 1;
+                    cache.sets[index].blocks[findAddress].dirty = 1;    // LRU
                     cycles++;
                 } else {   // write-through - change value in cache and in main memory
-                    cycles++;   // update value in cache 
+                    cycles++;   // update value in cache  LRU
                     cycles += 100;  // update value in main memory
                 }
                 storeHits++;
             }
             stores++;
-            // do cache simulation for loads, update accumulators
 	    // UPDATE NUMBER OF CYCLES
         } else if (command == 'l') {
             uint32_t findAddress = searchCache(address, cache);
@@ -141,15 +140,14 @@ int main(int argc, char **argv) {
                 // need to load value into cache
                 printf("load miss");
                 loadMisses++;
-		cycles += loadToCache(address, cache); 
+		        cycles += loadToCache(address, cache); // LRU AND FIFO
             } else {
                 // cache hit, don't need to do anything! :)
                 printf("load hit");
-                cycles++; //Trisha! update LRU here
+                cycles++; //Trisha! LRU
                 loadHits++;
             }
             loads++;
-            // so cache simultion for stores, update accumulators
         }
         else {
             fprintf(stderr, "Invalid trace file\n");

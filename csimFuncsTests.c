@@ -45,6 +45,7 @@ int main(int argc, char **argv) {
 	TEST(testPowerOfTwo);
     TEST(testComputeIndex);
     TEST(testSearchCache);
+    TEST(testLoadToCache);
 	TEST_FINI();
 }
 
@@ -132,5 +133,17 @@ void testSearchCache(TestObjs *objs) {
     ASSERT(0U == searchCache(8U, objs->twosCache));
     ASSERT(0U == searchCache(12U, objs->twosCache));
     ASSERT(objs->twosCache.associativity == searchCache(255U, objs->twosCache));
+}
+
+void testLoadToCache(TestObjs *objs) {
+    // tests with tinyCache
+    loadToCache(12U, objs->tinyCache);
+    ASSERT(0U == searchCache(12U, objs->tinyCache));
+    ASSERT(objs->tinyCache.associativity == searchCache(0U, objs->tinyCache));
+    loadToCache(16U, objs->tinyCache);
+    ASSERT(0U == searchCache(16U, objs->tinyCache));
+    ASSERT(objs->tinyCache.associativity == searchCache(12U, objs->tinyCache));
+    // test with twosCache
+
 }
 
