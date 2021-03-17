@@ -18,8 +18,9 @@
 #include "csimFuncs.h"
 
 typedef struct {
-    Cache cacheShell;
-    Cache tinyCache;
+    Cache cacheShell; // no actual data, (sets is NULL)
+    Cache tinyCache; // tiny cache - one set of one 4-byte block, will start full
+    Cache twosCache; // 2 sets, 2 4-byte blocks per set, will start with 1 block in each set full
 } TestObjs;
 
 TestObjs *setup(void);
@@ -43,27 +44,60 @@ int main(int argc, char **argv) {
 
 	TEST(testPowerOfTwo);
     TEST(testComputeIndex);
+    TEST(testSearchCache);
 	TEST_FINI();
 }
 
 TestObjs *setup(void) {
 	TestObjs *objs = malloc(sizeof(TestObjs));
-    Cache shell = {2, 2, NULL, 4}; // no acutal data
+    // CREATE SHELL
+    Cache shell = {2, 2, NULL, 4};
     objs->cacheShell = shell;
-    Cache tiny; // tiny cache - one set of one block with 4 bytes
-    tiny.offsetBits = 2;
-    tiny.indexBits = 0;
-    tiny.associativity = 1;
+    // CREATE TINYCACHE
+    Cache tiny; 
+    tiny.offsetBits = 2; // blocksize 4
+    tiny.indexBits = 0; // 1 set
+    tiny.associativity = 1; // 1 block per set
     Block * tinyBlockPtr = malloc(sizeof(Block));
-    Block tinyBlock = {0U, 1U, 0U};
-    *tinyBlockPtr = tinyBlock; // tag is 0
+    Block tinyBlock = {0U, 1U, 0U}; // INITIAL DATA has tag 0
+    *tinyBlockPtr = tinyBlock;
     Set * tinySetPtr = malloc(sizeof(Set));
-    Set tinySet = {0, 1, tinyBlockPtr, 0};
+    Set tinySet;
+    tinySet.blocks = tinyBlockPtr;
+    tinySet.emptyBlocks = 0;
+    tinySet.numBlocks = 1;
+    *tinySetPtr = tinySet;
+    tiny.sets = tinySetPtr;
+    objs->tinyCache = tiny;
+    // CREATE TWOSCACHE
+    Cache twos; 
+    twos.offsetBits = 2; // blocksize 4
+    twos.indexBits = 1; // 2 sets
+    twos.associativity = 2; // 2 blocks per set
+    Set * twosSetPtr = malloc(sizeof(Set) * 2);
+    for (int i = 0; i < 2; i++) {
+        Set set;
+        Block * blocks = malloc(sizeof(Block) * 2);
+        Block block1 = {0U, 1U, 1U}; // INITIAL DATA has tag 1
+        Block block2 = {0U, 0U, 0U};
+        blocks[0] = block1;
+        blocks[1] = block2;
+        set.blocks = blocks;
+        set.numBlocks = 2;
+        set.emptyBlocks = 1;
+        twosSetPtr[i] = set;
+    }
+    twos.sets = twosSetPtr;
+    objs->twosCache = twos;
 	return objs;
 }
 
 void cleanup(TestObjs *objs) {
-
+    free(objs->tinyCache.sets[0].blocks);
+    free((objs->tinyCache.sets));
+    free(objs->twosCache.sets[0].blocks);
+    free(objs->twosCache.sets[1].blocks);
+    free(objs->twosCache.sets);
 	free(objs);
 }
 
@@ -88,5 +122,15 @@ void testComputeIndex(TestObjs *objs) {
 }
 
 void testSearchCache(TestObjs *objs) {
+    // tests with tinyCache
     ASSERT(0U == searchCache(0U, objs->tinyCache));
+    ASSERT(objs->tinyCache.associativity == searchCache(255U, objs->tinyCache));
+    objs->tinyCache.sets[0].blocks[0].tag = 2U;
+    ASSERT(0U == searchCache(8U, objs->tinyCache));
+    ASSERT(objs->tinyCache.associativity == searchCache(255U, objs->tinyCache));
+    // test with twosCache
+    ASSERT(0U == searchCache(8U, objs->twosCache));
+    ASSERT(0U == searchCache(12U, objs->twosCache));
+    ASSERT(objs->twosCache.associativity == searchCache(255U, objs->twosCache));
 }
+

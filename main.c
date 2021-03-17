@@ -94,7 +94,6 @@ int main(int argc, char **argv) {
         set.blocks = blocks;
         set.numBlocks = numBlocks;
         set.emptyBlocks = numBlocks;
-        set.index = i;
         sets[i] = set;
     }
     cache.sets = sets;

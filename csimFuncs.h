@@ -17,6 +17,9 @@
 #include <stdint.h>
 #include <string.h>
 
+// direct-mapped: 1 block per set, 
+// fully associative: 1 set with all blocks in that set, so no index bits!
+
 
 typedef struct {
     uint32_t dirty;  // will only be used for write-back caches
@@ -25,7 +28,6 @@ typedef struct {
 } Block;
 
 typedef struct {
-    uint32_t index;     // identifies the set - but not every set has an index! (if number of sets is 1, fully associative)
     uint32_t numBlocks;
     Block * blocks;   
     uint32_t emptyBlocks;
