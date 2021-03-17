@@ -49,7 +49,7 @@ uint32_t computeIndex (uint32_t address, Cache cache) {
 
 uint32_t searchCache (uint32_t address, Cache cache) {
     uint32_t index = computeIndex(address, cache);
-    Set set = cache.sets[index]; // 
+    Set set = cache.sets[index]; //UH IDK IF THIS EQUAL SIGN WORKS 
     uint32_t tag = address >> (cache.indexBits + cache.offsetBits);
     for (uint32_t i = 0U; i < cache.associativity; i++) {
         if (set.blocks[i].valid && set.blocks[i].tag == tag) {
@@ -59,8 +59,45 @@ uint32_t searchCache (uint32_t address, Cache cache) {
     return cache.associativity;
 }
 
+uint32_t findMinCounter(Set * s) {
+    uint32_t min = 0, minIdx = 0;
+    min = s->blocks[0].counter; 
+    for (uint32_t i = 1; i<s->numBlocks; i++) {
+	if (s->blocks[i].counter < min) {
+	    min = s->blocks[i].counter; 
+	    minIdx = i; 
+	}
+    }
+    return minIdx; 
+}
+    
 
-uint32_t loadToCache (uint32_t address, Cache cache) {
+uint32_t loadToCache (uint32_t address, Cache cache, uint32_t lru, uint32_t writeBack) {
+    uint32_t cycles = 100; //cycles to load identified block into cache
+    Block * b; 
+    uint32_t index = computeIndex(address, cache);
+    Set * s = &(cache.sets[index]); ;
+    if (s->emptyBlocks >  0) {
+	for (uint32_t i=0; i<s->numBlocks; i++) {
+	    if (s->blocks[i].valid == 0) {
+		b = &(s->blocks[i]); 
+	    }
+	}
+		
+	s->emptyBlocks--; 
+    } else { //0 empty blocks in set 
+	uint32_t idxToEvict = findMinCounter(s); 
+	b = &(s->blocks[idxToEvict]);
+	if (writeBack) {
+	    if (b->dirty) {
+		cycles += 100; //have to write the block back to memory
+	    }
+	} 
+    } 	
+    b->valid = 1; 
+    b->tag = searchCache(address, cache); 
+    b->counter = s->storeCounter; 
+    b->dirty = 0;
 /*
 * compute index, locate set
 * if set.emptyBlocks > 0
@@ -78,6 +115,7 @@ uint32_t loadToCache (uint32_t address, Cache cache) {
 * make sure to count cycles!
 *
 */
-    return 0;
+    return cycles;
+	
 }
 

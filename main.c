@@ -88,7 +88,7 @@ int main(int argc, char **argv) {
         Set set;
         Block * blocks = malloc(sizeof(Block) * numBlocks);
         for (uint32_t j = 0; j < numBlocks; j++) {
-            Block b = {0, 0, 0};
+            Block b = {0, 0, 0, 0};
             blocks[j] = b;
         }
         set.blocks = blocks;
@@ -104,17 +104,17 @@ int main(int argc, char **argv) {
     // reading in series of loads and stores
     char command; 
     uint32_t address;
-    int ignore;
+    int offset;
   
 
     // need to update all cache accesses and stores in cache to track fifo/lru
-    while(scanf(" %c %x %d", &command, &address, &ignore) == 3) {
+    while(scanf(" %c %x %d", &command, &address, &offset) == 3) {
         if (command == 's') {
             uint32_t findAddress = searchCache(address, cache);
             if (findAddress == cache.associativity) {    // cache miss
                 printf("write miss");
                 if (writeAllocate) {  // load value into cache and change it there, implies writeBack
-                    cycles += loadToCache(address, cache);   // LRU AND FIFO
+                    cycles += loadToCache(address, cache, lru, writeBack);   // LRU AND FIFO
                     cycles++; 
                 } else {   // no-write-allocate - write value straight to main memory (skip over cache)
                     cycles += 100;
@@ -138,12 +138,12 @@ int main(int argc, char **argv) {
             uint32_t findAddress = searchCache(address, cache);
             if (findAddress == cache.associativity) {   // cache miss
                 // need to load value into cache
-                printf("load miss");
+                printf("read miss");
                 loadMisses++;
-		        cycles += loadToCache(address, cache); // LRU AND FIFO
+		        cycles += loadToCache(address, cache, lru, writeBack); // LRU AND FIFO
             } else {
                 // cache hit, don't need to do anything! :)
-                printf("load hit");
+                printf("read hit");
                 cycles++; //Trisha! LRU
                 loadHits++;
             }
@@ -153,7 +153,7 @@ int main(int argc, char **argv) {
             fprintf(stderr, "Invalid trace file\n");
             return 1;
         }
-        printf(" %c %d %d\n", command, address, ignore);
+        printf(" %c %d %d\n", command, address, offset);
     }
 
     // free cache

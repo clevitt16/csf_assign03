@@ -17,7 +17,7 @@
 #include <stdint.h>
 #include <string.h>
 
-// direct-mapped: 1 block per set, 
+// direct-mapped: 1 block per set, :q
 // fully associative: 1 set with all blocks in that set, so no index bits!
 
 
@@ -25,12 +25,14 @@ typedef struct {
     uint32_t dirty;  // will only be used for write-back caches
     uint32_t valid;  
     uint32_t tag; // holds the tags that identify each block
+    uint32_t counter; 
 } Block;
 
 typedef struct {
     uint32_t numBlocks;
-    Block * blocks;   
+    Block * blocks; 
     uint32_t emptyBlocks;
+    uint32_t storeCounter; 
 } Set;
 
 typedef struct {
@@ -85,7 +87,7 @@ uint32_t searchCache (uint32_t address, Cache cache);
 * Returns
 *    the number of cycles required to load the value
 */
-uint32_t loadToCache (uint32_t address, Cache cache);
+uint32_t loadToCache (uint32_t address, Cache cache, uint32_t lru, uint32_t writeBack);
 
 
 #endif
