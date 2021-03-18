@@ -76,6 +76,8 @@ int main(int argc, char **argv) {
         fprintf(stderr, "Incompatible cache write policies\n");
         return 1;
     }
+
+    uint32_t wordsPerBlock = blockSize / 4;   // number of 4-byte words in each block
 	
     // create cache - need to initialize all data
     // at this point, assume sets, blocks, and blockSize are all positive and powers of 2 (all input checking done)
@@ -117,7 +119,7 @@ int main(int argc, char **argv) {
                     cycles += loadToCache(address, cache, lru, writeBack);   // LRU AND FIFO
                     cycles++; 
                 } else {   // no-write-allocate - write value straight to main memory (skip over cache)
-                    cycles += 100;
+                    cycles += wordsPerBlock * 100;
                 }
                 storeMisses++;
             } else {  // cache hit, findAddress contains block number
@@ -128,7 +130,7 @@ int main(int argc, char **argv) {
                     cycles++;
                 } else {   // write-through - change value in cache and in main memory
                     cycles++;   // update value in cache  LRU
-                    cycles += 100;  // update value in main memory
+                    cycles += wordsPerBlock * 100;  // update value in main memory
                 }
                 storeHits++;
             }

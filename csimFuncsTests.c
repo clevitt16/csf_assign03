@@ -135,6 +135,7 @@ void testSearchCache(TestObjs *objs) {
     ASSERT(objs->twosCache.associativity == searchCache(255U, objs->twosCache));
 }
 
+// need to add more args to tests
 void testLoadToCache(TestObjs *objs) {
     // tests with tinyCache
     loadToCache(12U, objs->tinyCache);
