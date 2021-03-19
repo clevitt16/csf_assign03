@@ -49,7 +49,7 @@ uint32_t computeIndex (uint32_t address, Cache cache) {
 
 uint32_t searchCache (uint32_t address, Cache cache) {
     uint32_t index = computeIndex(address, cache);
-    Set set = cache.sets[index]; //UH IDK IF THIS EQUAL SIGN WORKS 
+    Set set = cache.sets[index]; 
     uint32_t tag = address >> (cache.indexBits + cache.offsetBits);
     for (uint32_t i = 0U; i < cache.associativity; i++) {
         if (set.blocks[i].valid && set.blocks[i].tag == tag) {
@@ -71,7 +71,33 @@ uint32_t findMinCounter(Set * s) {
     return minIdx; 
 }
     
+uint32_t findMaxCounter(Set * s) {
+    uint32_t max = 0, maxIdx = 0;
+    max = s->blocks[0].counter;
+    for (uint32_t i = 1; i<s->numBlocks; i++) {
+            if (s->blocks[i].counter > max) {
+                max = s->blocks[i].counter;
+                maxIdx = i;
+            }
+    }
+    return maxIdx;
+}
 
+void incrementLRU(Set * s, uint32_t idxToAccess) {
+    uint32_t accessCounter = s->blocks[idxToAccess].counter; 
+    if (accessCounter == 0) { //removing most recently used, no change
+	return; 
+    } 
+
+    for (uint32_t i=0; i<s->numBlocks; i++) { //increase other counters
+	if (s->blocks[i].valid && s->blocks[i].counter <= accessCounter) {
+	    s->blocks[i].counter++; 
+	}
+    }
+    
+    s->blocks[idxToAccess].counter = 0; 
+
+}
 uint32_t loadToCache (uint32_t address, Cache cache, uint32_t lru, uint32_t writeBack) {
     uint32_t wordsPerBlock = (unsigned)pow(2, cache.offsetBits - 2); // number of 4-byte chunks in each block
     uint32_t cycles = wordsPerBlock * 100; // each 4-byte word takes 100 cycles to load
@@ -86,7 +112,13 @@ uint32_t loadToCache (uint32_t address, Cache cache, uint32_t lru, uint32_t writ
 	    }
 	    s->emptyBlocks--; 
     } else { //0 empty blocks in set, need to evict
-	    uint32_t idxToEvict = findMinCounter(s); 
+	    uint32_t idxToEvict; 
+	    if (lru) {
+		idxToEvict = findMaxCounter(s);
+    		incrementLRU(s, idxToEvict);  
+	    } else {
+		idxToEvict = findMaxCounter(s);
+	    }
 	    b = &(s->blocks[idxToEvict]);
 	    if (writeBack) {
 	        if (b->dirty) {
@@ -96,25 +128,11 @@ uint32_t loadToCache (uint32_t address, Cache cache, uint32_t lru, uint32_t writ
     } 	
     b->valid = 1; 
     b->tag = address >> (cache.indexBits + cache.offsetBits);
-    b->counter = s->storeCounter;       // need to decriment all other counters?
+    if (!lru) {
+	s->storeCounter++;
+	b->counter = s->storeCounter;	 // need to decriment all other counters?
+    }      
     b->dirty = 0;
-/*
-* compute index, locate set
-* if set.emptyBlocks > 0
-*   iterate through blocks until you find the invalid one
-*   set it to valid and set new tag
-*   decriment set.emptyBlocks
-*   done
-* if emptyBlocks == 0 need to do an eviction!
-*   identify which block to evict
-*       if fifo, check block fifo trackers
-*       if lru, check block lru trackers
-*   if write-through, can just set the new tag
-*   if write-back, check dirty bit of each block and store dirty ones in main memory, wipe all dirty bits and set tag
-*  
-* make sure to count cycles!
-*
-*/
     return cycles;
 	
 }

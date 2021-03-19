@@ -114,25 +114,32 @@ int main(int argc, char **argv) {
         if (command == 's') {
             uint32_t findAddress = searchCache(address, cache);
             if (findAddress == cache.associativity) {    // cache miss
-                printf("write miss");
                 if (writeAllocate) {  // load value into cache and change it there, implies writeBack
-                    cycles += loadToCache(address, cache, lru, writeBack);   // LRU AND FIFO
-                    cycles++; 
+                    cycles += loadToCache(address, cache, lru, writeBack);  
+                    cycles++; //writing to value in cache 
+		    uint32_t index = computeIndex(address, cache);
+		    uint32_t findAddress = searchCache(address, cache);
+                    cache.sets[index].blocks[findAddress].dirty = 1; 
                 } else {   // no-write-allocate - write value straight to main memory (skip over cache)
                     cycles += wordsPerBlock * 100;
                 }
                 storeMisses++;
             } else {  // cache hit, findAddress contains block number
-                printf("write hit");
                 if (writeBack) {  // change value in cache, make sure to mark dirty bit
                     uint32_t index = computeIndex(address, cache);
                     cache.sets[index].blocks[findAddress].dirty = 1;    // LRU
                     cycles++;
                 } else {   // write-through - change value in cache and in main memory
-                    cycles++;   // update value in cache  LRU
+                   // cycles++;   // update value in cache  LRU
                     cycles += wordsPerBlock * 100;  // update value in main memory
                 }
                 storeHits++;
+	//	incrementLRU(&(cache.sets[index]), findAddress);
+		if (lru) {
+		    uint32_t index = computeIndex(address, cache);
+		    uint32_t findAddress = searchCache(address, cache);
+		    incrementLRU(&(cache.sets[index]), findAddress);
+		}
             }
             stores++;
 	    // UPDATE NUMBER OF CYCLES
@@ -140,24 +147,41 @@ int main(int argc, char **argv) {
             uint32_t findAddress = searchCache(address, cache);
             if (findAddress == cache.associativity) {   // cache miss
                 // need to load value into cache
-                printf("read miss");
                 loadMisses++;
-		        cycles += loadToCache(address, cache, lru, writeBack); // LRU AND FIFO
+		cycles += loadToCache(address, cache, lru, writeBack); // LRU AND FIFO
             } else {
                 // cache hit, don't need to do anything! :)
-                printf("read hit");
                 cycles++; //Trisha! LRU
                 loadHits++;
+	//	incrementLRU(&(cache.sets[index]), findAddress);
+		if (lru) {
+                    uint32_t index = computeIndex(address, cache);
+                    uint32_t findAddress = searchCache(address, cache);
+                    incrementLRU(&(cache.sets[index]), findAddress);
+                } 
             }
             loads++;
-        }
-        else {
+        } else {
             fprintf(stderr, "Invalid trace file\n");
             return 1;
         }
-        printf(" %c %d %d\n", command, address, offset);
+/*	
+	if (lru && !(command == 's' && !writeAllocate)) {
+	    uint32_t index = computeIndex(address, cache);
+	    uint32_t findAddress = searchCache(address, cache);
+	    incrementLRU(&(cache.sets[index]), findAddress);
+	}
+
+*/ 
     }
 
+    printf("Total loads: %u\n", loads); 
+    printf("Total stores: %u\n", stores);
+    printf("Load hits: %u\n", loadHits);
+    printf("Load misses: %u\n", loadMisses);
+    printf("Store hits: %u\n", storeHits);
+    printf("Store misses: %u\n", storeMisses);
+    printf("Total cycles: %u\n", cycles);
     // free cache
     for (uint32_t i = 0; i < numSets; i++) {
         free(cache.sets[i].blocks);

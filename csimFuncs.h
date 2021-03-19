@@ -89,5 +89,6 @@ uint32_t searchCache (uint32_t address, Cache cache);
 */
 uint32_t loadToCache (uint32_t address, Cache cache, uint32_t lru, uint32_t writeBack);
 
+void incrementLRU(Set * s, uint32_t addressToEvict); 
 
 #endif

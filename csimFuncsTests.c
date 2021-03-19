@@ -31,6 +31,36 @@ void testComputeIndex(TestObjs *objs);
 void testSearchCache(TestObjs *objs);
 void testLoadToCache(TestObjs *objs);
 
+/* set to nonzero if a call to exit is expected */
+int expectedExit;
+/* jump buffer that our version of exit can use to jump back to test function */
+sigjmp_buf exitBuf;
+
+/*
+ * Custom version of exit: useful for testing functions where
+ * the expected behavior is a call to exit (e.g., because
+ * an argument value is invalid.)  If the expectedExit
+ * variable is set to a nonzero value, uses siglongjmp (via
+ * exitBuf) to return control to the test function.
+ * If expectedExit is not set, immediately fails the
+ * current test.
+ */
+void exit(int exitCode) {
+        if (expectedExit) {
+                /* jump back to test function */
+                siglongjmp(exitBuf, 1);
+        } else {
+                /* exit called unexpectedly, fail the test */
+                FAIL("Unexpected exit");
+        }
+}
+
+void on_complete(int numPassed, int numExecuted) {
+        printf("%d/%d tests passed\n", numPassed, numExecuted);
+}
+
+
+
 int main(int argc, char **argv) {
 	TEST_INIT();
 
