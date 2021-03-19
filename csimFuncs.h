@@ -88,6 +88,41 @@ uint32_t searchCache (uint32_t address, Cache cache);
 */
 uint32_t loadToCache (uint32_t address, Cache cache, uint32_t lru, uint32_t writeBack);
 
+/*
+ * Increments the block counter of all blocks that have a counter 
+ * less than the block at the given index. The block at the given index
+ * has either been accessed or is to be evicted. Sets counter of block 
+ * at given index to 0.
+ * Parameters
+ *	s - pointer to the set with the block that is accessed or to be evicted
+ *	idxToAccess - index of block that was accessed or to be evicted
+ *  Returns
+ *	void
+ */
 void incrementLRU(Set * s, uint32_t addressToEvict); 
 
+/*
+ * Increments the block counter of all of the blocks in the given set. 
+ * The block at the given index is to be evicted/replaced. 
+ * Sets the counter of the block at the given index to 0. 
+ * Precondition: All blocks in set are valid
+ * Parameters 
+ *	s - pointer to the set with the block to be evicted/replaced
+ *	idxToAccess - index of block to be evicted/replaced
+ * Returns 
+ *	void
+ */
+void incrementFIFO(Set * s, uint32_t idxToAccess);
+
+/*
+ * Given a set, finds the index of the block to be evicted for FIFO or LRU
+ *
+ * Precondition: All blocks in set are valid 
+ * Parameters 
+ *	s - pointer to set with block to be evicted/replaced
+ *  Returns 
+ *	index of block with highest counter value. This is the block
+ *	to be evicted.
+ */
+uint32_t findMaxCounter(Set * s);
 #endif

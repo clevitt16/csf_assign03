@@ -59,18 +59,6 @@ uint32_t searchCache (uint32_t address, Cache cache) {
     return cache.associativity;
 }
 
-uint32_t findMinCounter(Set * s) {
-    uint32_t min = 0, minIdx = 0;
-    min = s->blocks[0].counter; //assume all blocks are valid
-    for (uint32_t i = 1; i<s->numBlocks; i++) {
-	    if (s->blocks[i].counter < min) {
-	        min = s->blocks[i].counter; 
-	        minIdx = i; 
-	    }
-    }
-    return minIdx; 
-}
-    
 uint32_t findMaxCounter(Set * s) {
     uint32_t max = 0, maxIdx = 0;
     max = s->blocks[0].counter; //assume all blocks are valid

@@ -9,4 +9,4 @@ In main.c, we are reading and validating the command line inptus, and we are rea
 MS2
 
 Casey wrote powerOfTwo(), computeIndex(), searchCache(), and the bulk of main.c
-Casey also wrote the tests in csimFuncsTests.c
+Trisha implemented the FIFO and LRU and the loads of blocks into cache. Trisha wrote the functions loadToCache(), incrementFIFO(), incrementLRU(), findMaxCounter(), and some of main.c
