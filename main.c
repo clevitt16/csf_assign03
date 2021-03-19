@@ -77,7 +77,7 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    uint32_t wordsPerBlock = blockSize / 4;   // number of 4-byte words in each block
+    //uint32_t wordsPerBlock = blockSize / 4;   // number of 4-byte words in each block
 	
     // create cache - need to initialize all data
     // at this point, assume sets, blocks, and blockSize are all positive and powers of 2 (all input checking done)
@@ -96,7 +96,6 @@ int main(int argc, char **argv) {
         set.blocks = blocks;
         set.numBlocks = numBlocks;
         set.emptyBlocks = numBlocks;
-	set.storeCounter = 0; 
         sets[i] = set;
     }
     cache.sets = sets;

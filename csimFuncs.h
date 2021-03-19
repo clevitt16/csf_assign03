@@ -32,7 +32,6 @@ typedef struct {
     uint32_t numBlocks;
     Block * blocks; 
     uint32_t emptyBlocks;
-    uint32_t storeCounter; 
 } Set;
 
 typedef struct {

@@ -98,6 +98,16 @@ void incrementLRU(Set * s, uint32_t idxToAccess) {
     s->blocks[idxToAccess].counter = 0; 
 
 }
+
+void incrementFIFO(Set * s, uint32_t idxToAccess) {
+    for (uint32_t i=0; i<s->numBlocks; i++) { //increase other counters
+	s->blocks[i].counter++;
+    }
+    
+    s->blocks[idxToAccess].counter = 0;
+
+}
+
 uint32_t loadToCache (uint32_t address, Cache cache, uint32_t lru, uint32_t writeBack) {
     uint32_t wordsPerBlock = (unsigned)pow(2, cache.offsetBits - 2); // number of 4-byte chunks in each block
     uint32_t cycles = wordsPerBlock * 100; // each 4-byte word takes 100 cycles to load
@@ -105,19 +115,19 @@ uint32_t loadToCache (uint32_t address, Cache cache, uint32_t lru, uint32_t writ
     uint32_t index = computeIndex(address, cache);
     Set * s = &(cache.sets[index]); ;
     if (s->emptyBlocks >  0) {
-	    for (uint32_t i = 0; i < s->numBlocks; i++) {
+	    for (uint32_t i = 0; i < s->numBlocks; i++) { //find empty block
 	        if (s->blocks[i].valid == 0) {
-		        b = &(s->blocks[i]); 
+		        b = &(s->blocks[i]); //will load data into this block
+			break;
 	        }
 	    }
 	    s->emptyBlocks--; 
     } else { //0 empty blocks in set, need to evict
-	    uint32_t idxToEvict; 
+	    uint32_t idxToEvict = findMaxCounter(s); 
 	    if (lru) {
-		idxToEvict = findMaxCounter(s);
     		incrementLRU(s, idxToEvict);  
 	    } else {
-		idxToEvict = findMinCounter(s);
+		incrementFIFO(s, idxToEvict); 
 	    }
 	    b = &(s->blocks[idxToEvict]);
 	    if (writeBack) {
@@ -128,10 +138,6 @@ uint32_t loadToCache (uint32_t address, Cache cache, uint32_t lru, uint32_t writ
     } 	
     b->valid = 1; 
     b->tag = address >> (cache.indexBits + cache.offsetBits);
-    if (!lru) {
-	s->storeCounter++;
-	b->counter = s->storeCounter;	 // need to decriment all other counters?
-    }      
     b->dirty = 0;
     return cycles;
 	
