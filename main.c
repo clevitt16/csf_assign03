@@ -149,9 +149,10 @@ int main(int argc, char **argv) {
                 // need to load value into cache
                 loadMisses++;
 		cycles += loadToCache(address, cache, lru, writeBack); // LRU AND FIFO
+		cycles++; 
             } else {
                 // cache hit, don't need to do anything! :)
-                cycles++; //Trisha! LRU
+                cycles++;
                 loadHits++;
 	//	incrementLRU(&(cache.sets[index]), findAddress);
 		if (lru) {
