@@ -117,7 +117,7 @@ uint32_t loadToCache (uint32_t address, Cache cache, uint32_t lru, uint32_t writ
 		idxToEvict = findMaxCounter(s);
     		incrementLRU(s, idxToEvict);  
 	    } else {
-		idxToEvict = findMaxCounter(s);
+		idxToEvict = findMinCounter(s);
 	    }
 	    b = &(s->blocks[idxToEvict]);
 	    if (writeBack) {
