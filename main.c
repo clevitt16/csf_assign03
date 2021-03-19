@@ -23,11 +23,11 @@ int main(int argc, char **argv) {
         return 1; 
     }
     
-    uint32_t numSets, numBlocks, blockSize, writeAllocate, writeBack, lru;
+    uint32_t numSets = 0, numBlocks = 0, blockSize = 0, writeAllocate = 0, writeBack = 0, lru = 0;
     // set command-line arguments
 
-    if (atol(argv[1]) > 0) {            // kinda confused about this logic?
-        numSets = atol(argv[1]);       // is it meant to check for overflow converting to int? or for negative numbers?
+    if (atol(argv[1]) > 0) {            
+        numSets = atol(argv[1]);       
     } else {
         fprintf(stderr, "Invalid number of sets\n");   // also need to check that sets is a power of 2
         return 1; 
@@ -96,6 +96,7 @@ int main(int argc, char **argv) {
         set.blocks = blocks;
         set.numBlocks = numBlocks;
         set.emptyBlocks = numBlocks;
+	set.storeCounter = 0; 
         sets[i] = set;
     }
     cache.sets = sets;
