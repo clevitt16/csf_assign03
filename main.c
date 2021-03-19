@@ -121,7 +121,7 @@ int main(int argc, char **argv) {
 		    uint32_t findAddress = searchCache(address, cache);
                     cache.sets[index].blocks[findAddress].dirty = 1; 
                 } else {   // no-write-allocate - write value straight to main memory (skip over cache)
-                    cycles += wordsPerBlock * 100;
+                    cycles += 100;
                 }
                 storeMisses++;
             } else {  // cache hit, findAddress contains block number
@@ -131,7 +131,7 @@ int main(int argc, char **argv) {
                     cycles++;
                 } else {   // write-through - change value in cache and in main memory
                    // cycles++;   // update value in cache  LRU
-                    cycles += wordsPerBlock * 100;  // update value in main memory
+                    cycles += 100;  // update value in main memory
                 }
                 storeHits++;
 	//	incrementLRU(&(cache.sets[index]), findAddress);

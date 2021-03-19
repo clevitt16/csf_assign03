@@ -136,4 +136,32 @@ uint32_t loadToCache (uint32_t address, Cache cache, uint32_t lru, uint32_t writ
     return cycles;
 	
 }
+/*
+Case 1: Store 
+    Not in cache 
+	if write_alloc
+	    cycles + 100 //load to cache
+	    cycles + 1  //write to cache
+	else if no_write_alloc
+	    cycles + 100 //write to main
+
+    In cache
+	if write_back
+	    cycles + 1 //write to cache
+	else if write through
+	    cycles + 100 //write to main
+
+Case 2: Load
+    Not in cache
+	cycles + 100 //load to cache
+
+
+    In cache
+	cycles + 1 //read from cache
+
+*/
+
+
+
+
 
