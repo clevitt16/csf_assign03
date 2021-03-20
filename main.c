@@ -58,7 +58,7 @@ int main(int argc, char **argv) {
     if (strcmp("write-through", argv[5]) == 0) {
         writeBack = 0U;
     } else if (strcmp("write-back", argv[5]) == 0) {
-        writeAllocate = 1U;
+        writeBack = 1U;
     } else {
         fprintf(stderr, "Incorrect write hit arg\n");
     }
@@ -120,6 +120,7 @@ int main(int argc, char **argv) {
 		    uint32_t index = computeIndex(address, cache);
 		    uint32_t findAddress = searchCache(address, cache);
                     cache.sets[index].blocks[findAddress].dirty = 1; 
+		    if (!writeBack) { cycles += 100; }
                 } else {   // no-write-allocate - write value straight to main memory (skip over cache)
                     cycles += 100;
                 }
@@ -130,7 +131,6 @@ int main(int argc, char **argv) {
                     cache.sets[index].blocks[findAddress].dirty = 1;    // LRU
                     cycles++;
                 } else {   // write-through - change value in cache and in main memory
-                   // cycles++;   // update value in cache  LRU
                     cycles += 100;  // update value in main memory
                 }
                 storeHits++;

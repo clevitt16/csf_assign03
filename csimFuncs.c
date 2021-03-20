@@ -134,8 +134,10 @@ uint32_t loadToCache (uint32_t address, Cache cache, uint32_t lru, uint32_t writ
 Case 1: Store 
     Not in cache 
 	if write_alloc
-	    cycles + 100 //load to cache
+	    cycles + load_cycles //load to cache
 	    cycles + 1  //write to cache
+	    if write_through
+		cycles + 100 //write to main mem
 	else if no_write_alloc
 	    cycles + 100 //write to main
 
@@ -147,7 +149,7 @@ Case 1: Store
 
 Case 2: Load
     Not in cache
-	cycles + 100 //load to cache
+	cycles + load_cycles //load to cache
 
 
     In cache
