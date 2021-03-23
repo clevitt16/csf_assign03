@@ -125,4 +125,11 @@ void incrementFIFO(Set * s, uint32_t idxToAccess);
  *	to be evicted.
  */
 uint32_t findMaxCounter(Set * s);
+
+
+void stringToNum(char * input, uint32_t * num);
+
+void makeCache(Cache * cache, uint32_t numSets,
+                uint32_t numBlocks, uint32_t blockSize); 
+void setCacheConditions(char * input, char * zero, char * one, uint32_t * num);
 #endif

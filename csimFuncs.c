@@ -130,6 +130,54 @@ uint32_t loadToCache (uint32_t address, Cache cache, uint32_t lru, uint32_t writ
     return cycles;
 	
 }
+
+void stringToNum(char * input, uint32_t * num) {
+    if (atol(input) > 0) {
+        sscanf(input, " %u", num);
+	if (powerOfTwo(*num) == -1) {
+	    fprintf(stderr, "Cache feature not a power of two\n");
+	    exit(1); 
+	}
+    } else {
+        fprintf(stderr, "Invalid cache feature\n");  
+        exit(1);
+    }
+}
+
+void setCacheConditions(char * input, char * zero, char * one, uint32_t * num) {
+    if (strcmp(zero, input) == 0) {
+            *num = 0U;
+	    return;
+    } else if (strcmp(one, input) == 0) {
+        *num = 1U;
+	return;
+    } else {
+            fprintf(stderr, "Incorrect write miss arg\n");
+	    exit(1); 
+    }
+}
+
+void makeCache(Cache * cache, uint32_t numSets, 
+		uint32_t numBlocks, uint32_t blockSize) { 
+    cache->offsetBits = powerOfTwo(blockSize);
+    cache->indexBits = powerOfTwo(numSets);
+    cache->associativity = numBlocks;
+    Set * sets = malloc(sizeof(Set) * numSets);
+    for (uint32_t i = 0; i < numSets; i++) {
+        Set set;
+        Block * blocks = malloc(sizeof(Block) * numBlocks);
+        for (uint32_t j = 0; j < numBlocks; j++) {
+            Block b = {0, 0, 0, 0};
+            blocks[j] = b;
+        }
+        set.blocks = blocks;
+        set.numBlocks = numBlocks;
+        set.emptyBlocks = numBlocks;
+        sets[i] = set;
+    }
+    cache->sets = sets;
+}
+
 /*
 Case 1: Store 
     Not in cache 
