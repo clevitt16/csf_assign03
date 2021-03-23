@@ -1,0 +1,135 @@
+GCC.TRACE  #############################
+
+write-allocate write-back fifo
+Total loads: 318197
+Total stores: 197486
+Load hits: 314171
+Load misses: 4026
+Store hits: 188047
+Store misses: 9439
+Total cycles: 9845283
+Hit rate: 0.973889
+Miss penalty: 400
+
+write-allocate write-through fifo
+Total loads: 318197
+Total stores: 197486
+Load hits: 314171
+Load misses: 4026
+Store hits: 188047
+Store misses: 9439
+Total cycles: 25462236
+Hit rate: 0.973889
+Miss penalty: 400
+
+no-write-allocate write-through fifo
+Total loads: 318197
+Total stores: 197486
+Load hits: 311017
+Load misses: 7180
+Store hits: 163705
+Store misses: 33781
+Total cycles: 22938797
+Hit rate: 0.920569
+Miss penalty: 400
+
+write-allocate write-back lru
+Total loads: 318197
+Total stores: 197486
+Load hits: 301956
+Load misses: 16241
+Store hits: 186041
+Store misses: 11445
+Total cycles: 17888483
+Hit rate: 0.946312
+Miss penalty: 400
+
+write-allocate write-through lru
+Total loads: 318197
+Total stores: 197486
+Load hits: 301956
+Load misses: 16241
+Store hits: 186041
+Store misses: 11445
+Total cycles: 31152642
+Hit rate: 0.946312
+Miss penalty: 400
+
+no-write-allocate write-through lru
+Total loads: 318197
+Total stores: 197486
+Load hits: 300548
+Load misses: 17649
+Store hits: 160319
+Store misses: 37167
+Total cycles: 27126397
+Hit rate: 0.893702
+Miss penalty: 400
+
+SWIM.TRACE   #############################
+
+write-allocate write-back fifo
+Total loads: 220668
+Total stores: 82525
+Load hits: 218357
+Load misses: 2311
+Store hits: 71787
+Store misses: 10738
+Total cycles: 9655593
+Hit rate: 0.956961
+Miss penalty: 400
+
+write-allocate write-through fifo
+Total loads: 220668
+Total stores: 82525
+Load hits: 218357
+Load misses: 2311
+Store hits: 71787
+Store misses: 10738
+Total cycles: 13703506
+Hit rate: 0.956961
+Miss penalty: 400
+
+no-write-allocate write-through fifo
+Total loads: 220668
+Total stores: 82525
+Load hits: 217968
+Load misses: 2700
+Store hits: 57994
+Store misses: 24531
+Total cycles: 9553168
+Hit rate: 0.910186
+Miss penalty: 400
+
+write-allocate write-back lru
+Total loads: 220668
+Total stores: 82525
+Load hits: 213403
+Load misses: 7265
+Store hits: 70913
+Store misses: 11612
+Total cycles: 12519593
+Hit rate: 0.937739
+Miss penalty: 400
+
+write-allocate write-through lru
+Total loads: 220668
+Total stores: 82525
+Load hits: 213403
+Load misses: 7265
+Store hits: 70913
+Store misses: 11612
+Total cycles: 16035580
+Hit rate: 0.937739
+Miss penalty: 400
+
+no-write-allocate write-through lru
+Total loads: 220668
+Total stores: 82525
+Load hits: 216549
+Load misses: 4119
+Store hits: 57557
+Store misses: 24968
+Total cycles: 10120768
+Hit rate: 0.904064
+Miss penalty: 400
