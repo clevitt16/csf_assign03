@@ -32,7 +32,7 @@ echo "no-write-allocate write-through lru" >> Results_$1_$2_$3.txt
 
 #swim.trace commands
 echo "" >> Results_$1_$2_$3.txt
-echo "swim.trace" > Results_$1_$2_$3.txt
+echo "SWIM.TRACE" >> Results_$1_$2_$3.txt
 echo "" >> Results_$1_$2_$3.txt
 echo "write-allocate write-back fifo" >> Results_$1_$2_$3.txt
 ./csim $1 $2 $3 write-allocate write-back fifo < swim.trace >> Results_$1_$2_$3.txt
