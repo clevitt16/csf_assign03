@@ -99,7 +99,7 @@ void incrementFIFO(Set * s, uint32_t idxToAccess) {
 uint32_t loadToCache (uint32_t address, Cache cache, uint32_t lru, uint32_t writeBack) {
     uint32_t wordsPerBlock = (unsigned)pow(2, cache.offsetBits - 2); // number of 4-byte chunks in each block
     uint32_t cycles = wordsPerBlock * 100; // each 4-byte word takes 100 cycles to load
-    Block * b; 
+    Block * b = NULL; 
     uint32_t index = computeIndex(address, cache);
     Set * s = &(cache.sets[index]); ;
     if (s->emptyBlocks >  0) {

@@ -127,9 +127,41 @@ void incrementFIFO(Set * s, uint32_t idxToAccess);
 uint32_t findMaxCounter(Set * s);
 
 
+/*
+* Helper function to read in numeric command line args and
+* perform input checking
+* Parameters
+*    input - the string containing the command line argument
+*    num - pointer to location to store the argument after conversion
+*/
 void stringToNum(char * input, uint32_t * num);
 
+/*
+* Helper function to read in cache policies (for which there are 2 options)
+* from command line args and perform input checking
+* Parameters
+*    input - the string containing the command line argument
+*    zero - string containing first valid option for the cache policy
+*    one - string containing second valid option for the cache policy
+*    num - pointer to location to store value of cache policy as a boolean
+*           will be 0 if the argument was equal to zero, 1 if the arg equals one
+*/
+void setCacheConditions(char * input, char * zero, char * one, uint32_t * num);
+
+
+/*
+* Helper function to create a Cache, given all relevant info
+* Parameters
+*    cache - pointer to location to store the Cache that's created
+*    numSets - number of sets in this cache
+*    numBlocks - number of blocks per set in this cache
+*    blockSize - number of bytes per block in this cache
+*/
 void makeCache(Cache * cache, uint32_t numSets,
                 uint32_t numBlocks, uint32_t blockSize); 
-void setCacheConditions(char * input, char * zero, char * one, uint32_t * num);
+
+
+
+
+
 #endif
