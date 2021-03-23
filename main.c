@@ -27,21 +27,21 @@ int main(int argc, char **argv) {
     // set command-line arguments
 
     if (atol(argv[1]) > 0) {            
-        numSets = atol(argv[1]);       
+	sscanf(argv[1], " %u", &numSets); 
     } else {
         fprintf(stderr, "Invalid number of sets\n");   // also need to check that sets is a power of 2
         return 1; 
     }
 
     if (atol(argv[2]) > 0) {
-        numBlocks = atol(argv[2]);
+	sscanf(argv[2], " %u", &numBlocks);
     } else {
         fprintf(stderr, "Invalid number of blocks\n");  // also need to check that blocks is a power of 2
         return 1;
     }
     
     if (atol(argv[3]) >= 4) {
-        blockSize = atol(argv[3]);
+	sscanf(argv[3], " %u", &blockSize); 
     } else {
         fprintf(stderr, "Invalid block size\n");  // also need to check that blockSize >= 4 and a power of 2
         return 1;
