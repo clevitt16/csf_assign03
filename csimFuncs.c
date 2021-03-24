@@ -1,6 +1,6 @@
 /*
  * main function for cache simulator
- * CSF Assignment 3 MS 1
+ * CSF Assignment 3 MS 3
  * Casey Levitt
  * clevitt1@jh.edu
  * Trisha Karani
@@ -52,11 +52,11 @@ uint32_t searchCache (uint32_t address, Cache cache) {
     Set set = cache.sets[index]; 
     uint32_t tag = address >> (cache.indexBits + cache.offsetBits);
     for (uint32_t i = 0U; i < cache.associativity; i++) {
-        if (set.blocks[i].valid && set.blocks[i].tag == tag) {
-            return i;
-        }
+        if (set.blocks[i].valid && set.blocks[i].tag == tag) { //check if block has data and if tags are equal for matching 
+            return i;	//return the index 
+        }   
     }
-    return cache.associativity;
+    return cache.associativity; //cache associativity = # of blocks, which is always greater than the index of the blocks in the set
 }
 
 uint32_t findMaxCounter(Set * s) {
@@ -134,7 +134,7 @@ uint32_t loadToCache (uint32_t address, Cache cache, uint32_t lru, uint32_t writ
 void stringToNum(char * input, uint32_t * num) {
     if (atol(input) > 0) {
         sscanf(input, " %u", num);
-	if (powerOfTwo(*num) == -1) {
+	if (powerOfTwo(*num) == -1) { //check if command line inputs are powers of two
 	    fprintf(stderr, "Cache feature not a power of two\n");
 	    exit(1); 
 	}
@@ -159,18 +159,18 @@ void setCacheConditions(char * input, char * zero, char * one, uint32_t * num) {
 
 void makeCache(Cache * cache, uint32_t numSets, 
 		uint32_t numBlocks, uint32_t blockSize) { 
-    cache->offsetBits = powerOfTwo(blockSize);
-    cache->indexBits = powerOfTwo(numSets);
-    cache->associativity = numBlocks;
+    cache->offsetBits = powerOfTwo(blockSize); //offset bits are the power of two of the block size
+    cache->indexBits = powerOfTwo(numSets); //index bits are the power of two of the number of sets
+    cache->associativity = numBlocks; //cache associativity is number of blocks per set 
     Set * sets = malloc(sizeof(Set) * numSets);
     for (uint32_t i = 0; i < numSets; i++) {
         Set set;
         Block * blocks = malloc(sizeof(Block) * numBlocks);
-        for (uint32_t j = 0; j < numBlocks; j++) {
-            Block b = {0, 0, 0, 0};
+        for (uint32_t j = 0; j < numBlocks; j++) { 
+            Block b = {0, 0, 0, 0}; 
             blocks[j] = b;
         }
-        set.blocks = blocks;
+        set.blocks = blocks; 
         set.numBlocks = numBlocks;
         set.emptyBlocks = numBlocks;
         sets[i] = set;
@@ -178,32 +178,6 @@ void makeCache(Cache * cache, uint32_t numSets,
     cache->sets = sets;
 }
 
-/*
-Case 1: Store 
-    Not in cache 
-	if write_alloc
-	    cycles + load_cycles //load to cache
-	    cycles + 1  //write to cache
-	    if write_through
-		cycles + 100 //write to main mem
-	else if no_write_alloc
-	    cycles + 100 //write to main
-
-    In cache
-	if write_back
-	    cycles + 1 //write to cache
-	else if write through
-	    cycles + 100 //write to main
-
-Case 2: Load
-    Not in cache
-	cycles + load_cycles //load to cache
-
-
-    In cache
-	cycles + 1 //read from cache
-
-*/
 
 
 

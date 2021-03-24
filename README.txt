@@ -1,4 +1,9 @@
-# csf_assign03
+CSF Assignment 3 MS 3
+Casey Levitt
+clevitt1@jh.edu
+Trisha Karani
+tkarani1@jh.edu
+csf_assign03
 
 MS1
 
@@ -6,11 +11,11 @@ Trisha and Casey both made main.c, Makefile, csimFuncs.c, and csimFuncs.h
 In main.c, we are reading and validating the command line inptus, and we are reading the file stream. csimFuncs.c has the beginnings of a helper function to verify that values are powers of 2.  
 
 
-MS2
+MS2 and MS3
 
-Casey wrote powerOfTwo(), computeIndex(), searchCache(), and the bulk of main.c
-Trisha implemented the FIFO and LRU and the loads of blocks into cache. Trisha wrote the functions loadToCache(), incrementFIFO(), incrementLRU(), findMaxCounter(), and some of main.c
-
+Casey wrote powerOfTwo(), computeIndex(), searchCache(), and the bulk of main.c (counting and logic). Casey also tested the helper functions.
+Trisha implemented the FIFO and LRU and the loads of blocks into cache. Trisha wrote the functions loadToCache(), incrementFIFO(), incrementLRU(), findMaxCounter(), and some of main.c (cycle counting and lru)
+Trisha and Casey did the benchmarking for testing the most efficient cache together. Trisha also wrote the shell script run_tests.sh that takes three numbers (number of sets, number of blocks, block size) and runs all possible caching strategy combinations, and Casey ran the tests and analyzed for the best strategy.  
 
 Testing
 

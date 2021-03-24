@@ -1,6 +1,6 @@
 /*
  * main function for cache simulator
- * CSF Assignment 3 MS 1
+ * CSF Assignment 3 MS 3
  * Casey Levitt
  * clevitt1@jh.edu
  * Trisha Karani

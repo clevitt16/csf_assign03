@@ -1,6 +1,6 @@
 /*
  * main function for cache simulator
- * CSF Assignment 3 MS 1
+ * CSF Assignment 3 MS 3
  * Casey Levitt
  * clevitt1@jh.edu
  * Trisha Karani
@@ -65,9 +65,9 @@ int main(int argc, char **argv) {
         if (command == 's') {
             if (findAddress == cache.associativity) {    // cache miss
                 if (writeAllocate) {  // load value into cache and change it there, implies writeBack
-                    cycles += loadToCache(address, cache, lru, writeBack);  //loading value from main 
+                    cycles += loadToCache(address, cache, lru, writeBack);  //loading value from main, loadToCache sets lru and fifo counters
                     cycles++; //writing to value in cache 
-		    uint32_t findAddress = searchCache(address, cache); //get new address
+		    uint32_t findAddress = searchCache(address, cache); //get address of block added
 		    if (writeBack) {
 			cache.sets[index].blocks[findAddress].dirty = 1; 
 		    } else { 
@@ -79,14 +79,14 @@ int main(int argc, char **argv) {
                 storeMisses++;
             } else {  // cache hit, findAddress contains block number
                 if (writeBack) {  // change value in cache, make sure to mark dirty bit
-                    cache.sets[index].blocks[findAddress].dirty = 1;    // LRU
+                    cache.sets[index].blocks[findAddress].dirty = 1;    
                     cycles++;
                 } else {   // write-through - change value in cache and in main memory
                     cycles += 100;  // update value in main memory
                 }
                 storeHits++;
 		if (lru) {
-		    incrementLRU(&(cache.sets[index]), findAddress);
+		    incrementLRU(&(cache.sets[index]), findAddress); //hit is an access so update lru counters
 		}
             }
             stores++;
@@ -95,14 +95,14 @@ int main(int argc, char **argv) {
             if (findAddress == cache.associativity) {   // cache miss
                 // need to load value into cache
                 loadMisses++;
-		cycles += loadToCache(address, cache, lru, writeBack); 
+		cycles += loadToCache(address, cache, lru, writeBack); //loadToCache updates fifo and lru counters
 		cycles++; 
             } else {
                 // cache hit, don't need to do anything! :)
                 cycles++;
                 loadHits++;
 		if (lru) {
-                    incrementLRU(&(cache.sets[index]), findAddress);
+                    incrementLRU(&(cache.sets[index]), findAddress); //hit is an access so update lru counters
                 } 
             }
             loads++;
@@ -119,8 +119,10 @@ int main(int argc, char **argv) {
     printf("Store hits: %u\n", storeHits);
     printf("Store misses: %u\n", storeMisses);
     printf("Total cycles: %u\n", cycles);
+/*
     printf("Hit rate: %f\n", (1.0 * (loadHits + storeHits))/(1.0 *(loads + stores)));
     printf("Miss penalty: %u\n", (blockSize/4)*100); 
+  */
     // free cache
     for (uint32_t i = 0; i < numSets; i++) {
         free(cache.sets[i].blocks);
